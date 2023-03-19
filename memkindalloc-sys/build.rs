@@ -8,9 +8,7 @@ use std::{
 const ALLOWLIST_FUNCTION: &'static [&'static str] = &["memkind_.*"];
 
 #[allow(unused)]
-const ALLOWLIST_TYPES: &'static [&'static str] = &[
-    "memkind_.*",
-];
+const ALLOWLIST_TYPES: &'static [&'static str] = &["memkind_.*"];
 
 macro_rules! info {
     ($($args:tt)*) => { println!($($args)*) }
@@ -72,19 +70,28 @@ fn main() {
     assert!(out_dir.exists(), "OUT_DIR does not exist");
     info!("MEMKIND_REPO_DIR={:?}", memkind_dir);
 
-    // Run autogen:
-    let autogen = memkind_dir.join("autogen.sh");
-    let mut autogen_cmd = Command::new("sh");
-    autogen_cmd.arg(
-        autogen
-            .to_str()
-            .unwrap()
-            .replace("C:\\", "/c/")
-            .replace('\\', "/"),
-    )
-    .current_dir(&memkind_dir);
+    // Configuration files
+    let config_files = ["configure", "VERSION"];
 
-    run_and_log(&mut autogen_cmd, &build_dir.join("autogen.log"));
+    // Copy the configuration files to jemalloc's source directory
+    for f in &config_files {
+        fs::copy(Path::new("configure").join(f), memkind_dir.join(f))
+            .expect("failed to copy config file to memkind dir");
+    }
+
+    // // Run autogen:
+    // let autogen = memkind_dir.join("autogen.sh");
+    // let mut autogen_cmd = Command::new("sh");
+    // autogen_cmd.arg(
+    //     autogen
+    //         .to_str()
+    //         .unwrap()
+    //         .replace("C:\\", "/c/")
+    //         .replace('\\', "/"),
+    // )
+    // .current_dir(&memkind_dir);
+
+    // run_and_log(&mut autogen_cmd, &build_dir.join("autogen.log"));
 
     // Run configure:
     let configure = memkind_dir.join("configure");
@@ -105,7 +112,7 @@ fn main() {
 
     run_and_log(&mut cmd, &build_dir.join("config.log"));
 
-     // Make:
+    // Make:
     run(Command::new("make")
         .current_dir(&memkind_dir)
         .arg("-j")
@@ -121,10 +128,22 @@ fn main() {
         build_memkind_bindings(&install_dir);
     }
 
-    println!("cargo:rustc-link-search=native={}/lib", install_dir.display());
-    println!("cargo:rustc-link-search=native={}/lib", memkind_dir.display());
-    println!("cargo:rerun-if-changed=native={}/src", memkind_dir.display());
-    println!("cargo:rerun-if-changed=native={}/include", memkind_dir.display());
+    println!(
+        "cargo:rustc-link-search=native={}/lib",
+        install_dir.display()
+    );
+    println!(
+        "cargo:rustc-link-search=native={}/lib",
+        memkind_dir.display()
+    );
+    println!(
+        "cargo:rerun-if-changed=native={}/src",
+        memkind_dir.display()
+    );
+    println!(
+        "cargo:rerun-if-changed=native={}/include",
+        memkind_dir.display()
+    );
     println!("cargo:root={}", out_dir.display());
 }
 
