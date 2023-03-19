@@ -1,0 +1,3 @@
+[submodule "memkindalloc-sys/memkind"]
+	path = memkindalloc-sys/memkind
+	url = https://github.com/memkind/memkind.git
