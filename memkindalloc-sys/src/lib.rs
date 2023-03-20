@@ -2,7 +2,9 @@
 
 use core::ffi::c_int;
 
-pub mod memkind;
+mod memkind;
+
+pub use memkind::*;
 
 #[doc = "Operation success."]
 pub const MEMKIND_SUCCESS: c_int = 0;
