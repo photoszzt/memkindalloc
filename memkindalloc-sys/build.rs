@@ -187,7 +187,7 @@ fn build_memkind_bindings(out_dir: &PathBuf) {
         .generate()
         .expect("Should generate memkind API bindings OK");
     builder
-        .write_to_file("src/memkind.rs")
+        .write_to_file("src/memkind_api.rs")
         .expect("Couldn't write bcc bindings!");
 
     let have_working_rustfmt = std::process::Command::new("rustup")
