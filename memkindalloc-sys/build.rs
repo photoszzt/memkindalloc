@@ -82,14 +82,15 @@ fn main() {
     // Run autogen:
     let autogen = memkind_dir.join("autogen.sh");
     let mut autogen_cmd = Command::new("sh");
-    autogen_cmd.arg(
-        autogen
-            .to_str()
-            .unwrap()
-            .replace("C:\\", "/c/")
-            .replace('\\', "/"),
-    )
-    .current_dir(&memkind_dir);
+    autogen_cmd
+        .arg(
+            autogen
+                .to_str()
+                .unwrap()
+                .replace("C:\\", "/c/")
+                .replace('\\', "/"),
+        )
+        .current_dir(&memkind_dir);
 
     run_and_log(&mut autogen_cmd, &build_dir.join("autogen.log"));
 
