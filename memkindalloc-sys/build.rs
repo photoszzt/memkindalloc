@@ -129,6 +129,8 @@ fn main() {
         build_memkind_bindings(&install_dir);
     }
 
+    link_info();
+
     println!(
         "cargo:rustc-link-search=native={}/lib",
         install_dir.display()
@@ -146,6 +148,10 @@ fn main() {
         memkind_dir.display()
     );
     println!("cargo:root={}", out_dir.display());
+}
+
+fn link_info() {
+    println!("cargo:rustc-link-lib=memkind");
 }
 
 // define the function for when we will generate bindings
