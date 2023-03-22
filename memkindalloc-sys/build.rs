@@ -140,11 +140,11 @@ fn main() {
         memkind_dir.display()
     );
     println!(
-        "cargo:rerun-if-changed=native={}/src",
+        "cargo:rerun-if-changed={}/src/",
         memkind_dir.display()
     );
     println!(
-        "cargo:rerun-if-changed=native={}/include",
+        "cargo:rerun-if-changed={}/include/",
         memkind_dir.display()
     );
     println!("cargo:root={}", out_dir.display());
