@@ -109,6 +109,9 @@ fn main() {
     .env("CFLAGS", cflags.clone())
     .env("LDFLAGS", cflags.clone())
     .env("CPPFLAGS", cflags)
+    .arg("--disable-daxctl")
+    .arg("--disable-hwloc")
+    .arg("--disable-shared")
     .arg(format!("--prefix={}", install_dir.display()));
 
     run_and_log(&mut cmd, &build_dir.join("config.log"));
