@@ -142,19 +142,15 @@ fn main() {
         "cargo:rustc-link-search=native={}/lib",
         memkind_dir.display()
     );
-    println!(
-        "cargo:rerun-if-changed={}/src/",
-        memkind_dir.display()
-    );
-    println!(
-        "cargo:rerun-if-changed={}/include/",
-        memkind_dir.display()
-    );
+    println!("cargo:rustc-link-search=native=/usr/lib/x86_64-linux-gnu/");
+    println!("cargo:rerun-if-changed={}/src/", memkind_dir.display());
+    println!("cargo:rerun-if-changed={}/include/", memkind_dir.display());
     println!("cargo:root={}", out_dir.display());
 }
 
 fn link_info() {
-    println!("cargo:rustc-link-lib=memkind");
+    println!("cargo:rustc-link-lib=static=memkind");
+    println!("cargo:rustc-link-lib=static=numa");
 }
 
 // define the function for when we will generate bindings
