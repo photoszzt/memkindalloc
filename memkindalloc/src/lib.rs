@@ -3,7 +3,7 @@ mod ffi {
 }
 
 use core::ptr::NonNull;
-use std::ffi::c_void;
+use std::{ffi::c_void, alloc::GlobalAlloc, ptr::null_mut};
 
 #[derive(Debug)]
 pub struct FixedAlloctor {
@@ -76,12 +76,33 @@ impl FixedAlloctor {
         }
     }
 
-    pub fn alloc(&self, size: usize) -> *mut u8 {
-        unsafe {ffi::memkind_malloc(self.kind, size) as *mut u8}
+    #[inline]
+    pub unsafe fn alloc(&self, size: usize) -> *mut u8 {
+        ffi::memkind_malloc(self.kind, size) as *mut u8
     }
 
-    pub fn free(&self, ptr: NonNull<u8>) {
-        unsafe {ffi::memkind_free(self.kind, ptr.as_ptr() as *mut c_void); }
+    #[inline]
+    pub unsafe fn free(&self, ptr: NonNull<u8>) {
+        ffi::memkind_free(self.kind, ptr.as_ptr() as *mut c_void);
+    }
+}
+
+unsafe impl GlobalAlloc for FixedAlloctor {
+    #[inline]
+    unsafe fn alloc(&self, layout: std::alloc::Layout) -> *mut u8 {
+        let mut ptr = null_mut() as *mut c_void;
+        ffi::memkind_posix_memalign(self.kind, &mut ptr as *mut _, layout.align(), layout.size());
+        ptr as *mut u8
+    }
+
+    #[inline]
+    unsafe fn dealloc(&self, ptr: *mut u8, _layout: std::alloc::Layout) {
+        ffi::memkind_free(self.kind, ptr as *mut _);
+    }
+
+    #[inline]
+    unsafe fn realloc(&self, ptr: *mut u8, _layout: std::alloc::Layout, new_size: usize) -> *mut u8 {
+        ffi::memkind_realloc(self.kind, ptr as *mut _, new_size) as *mut _ 
     }
 }
 
