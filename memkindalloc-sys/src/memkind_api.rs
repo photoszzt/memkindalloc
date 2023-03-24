@@ -249,3 +249,61 @@ extern "C" {
     #[doc = " @brief Sets the behavior for allocations with size zero\n @param kind specified memory kind\n @param allow_zero_allocs determines returned ptr for malloc-like functions\n for allocations with size zero, return a valid ptr when set to true, NULL\n when set to false"]
     pub fn memkind_set_allow_zero_allocs(kind: memkind_t, allow_zero_allocs: bool);
 }
+pub const HBW_POLICY_BIND: hbw_policy_t = 1;
+pub const HBW_POLICY_PREFERRED: hbw_policy_t = 2;
+pub const HBW_POLICY_INTERLEAVE: hbw_policy_t = 3;
+pub const HBW_POLICY_BIND_ALL: hbw_policy_t = 4;
+pub type hbw_policy_t = ::std::os::raw::c_uint;
+pub const HBW_PAGESIZE_4KB: hbw_pagesize_t = 1;
+pub const HBW_PAGESIZE_2MB: hbw_pagesize_t = 2;
+pub const HBW_PAGESIZE_MAX_VALUE: hbw_pagesize_t = 3;
+pub type hbw_pagesize_t = ::std::os::raw::c_uint;
+extern "C" {
+    pub fn hbw_get_policy() -> hbw_policy_t;
+}
+extern "C" {
+    pub fn hbw_set_policy(mode: hbw_policy_t) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn hbw_check_available() -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn hbw_verify_memory_region(
+        addr: *mut ::std::os::raw::c_void,
+        size: usize,
+        flags: ::std::os::raw::c_int,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn hbw_malloc(size: usize) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn hbw_calloc(num: usize, size: usize) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn hbw_posix_memalign(
+        memptr: *mut *mut ::std::os::raw::c_void,
+        alignment: usize,
+        size: usize,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn hbw_posix_memalign_psize(
+        memptr: *mut *mut ::std::os::raw::c_void,
+        alignment: usize,
+        size: usize,
+        pagesize: hbw_pagesize_t,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn hbw_realloc(
+        ptr: *mut ::std::os::raw::c_void,
+        size: usize,
+    ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn hbw_free(ptr: *mut ::std::os::raw::c_void);
+}
+extern "C" {
+    pub fn hbw_malloc_usable_size(ptr: *mut ::std::os::raw::c_void) -> usize;
+}

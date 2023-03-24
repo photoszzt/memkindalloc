@@ -5,10 +5,10 @@ use std::{
 };
 
 #[allow(unused)]
-const ALLOWLIST_FUNCTION: &'static [&'static str] = &["memkind_.*"];
+const ALLOWLIST_FUNCTION: &'static [&'static str] = &["memkind_.*", "hbw_.*"];
 
 #[allow(unused)]
-const ALLOWLIST_TYPES: &'static [&'static str] = &["memkind_.*"];
+const ALLOWLIST_TYPES: &'static [&'static str] = &["memkind_.*", "hbw_.*"];
 
 macro_rules! info {
     ($($args:tt)*) => { println!($($args)*) }
@@ -57,7 +57,7 @@ fn main() {
     info!("BUILD_DIR={:?}", build_dir);
     info!("SRC_DIR={:?}", src_dir);
 
-    let compiler = cc::Build::new().extra_warnings(false).get_compiler();
+    let compiler = cc::Build::new().get_compiler();
     let cflags = compiler
         .args()
         .iter()
@@ -129,7 +129,7 @@ fn main() {
 
     #[cfg(feature = "generate")]
     {
-        build_memkind_bindings(&install_dir);
+        build_memkind_bindings(&install_dir, &src_dir);
     }
 
     link_info();
@@ -155,9 +155,9 @@ fn link_info() {
 
 // define the function for when we will generate bindings
 #[cfg(feature = "generate")]
-fn build_memkind_bindings(out_dir: &PathBuf) {
+fn build_memkind_bindings(out_dir: &PathBuf, src_dir: &PathBuf) {
     let include_dir = out_dir.join("include");
-    let header_file = include_dir.join("memkind.h");
+    let header_file = src_dir.join("wrapper.h");
     let mut bindings = bindgen::Builder::default()
         .header(header_file.display().to_string())
         .clang_arg("-I")
