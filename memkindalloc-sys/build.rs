@@ -57,7 +57,9 @@ fn main() {
     info!("BUILD_DIR={:?}", build_dir);
     info!("SRC_DIR={:?}", src_dir);
 
-    let compiler = cc::Build::new().get_compiler();
+    let compiler = cc::Build::new()
+        .flag("-flto=thin")
+        .get_compiler();
     let cflags = compiler
         .args()
         .iter()
